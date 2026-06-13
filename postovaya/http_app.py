@@ -60,7 +60,7 @@ class AppHandler(SimpleHTTPRequestHandler):
 
 
 def run():
-    host = "127.0.0.1"
+    host = os.environ.get("HOST", "127.0.0.1")
     port = int(os.environ.get("PORT", "8765"))
     server = ThreadingHTTPServer((host, port), AppHandler)
     print("Telegram Post Studio: http://%s:%s" % (host, port))
@@ -71,4 +71,3 @@ def run():
         pass
     finally:
         server.server_close()
-

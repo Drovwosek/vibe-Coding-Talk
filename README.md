@@ -36,6 +36,21 @@ export PORT="8765"
 Without `OPENAI_API_KEY`, the app returns a clearly marked demo post so the full UI can still be tested.
 Venue research requires `OPENAI_API_KEY` because it uses the Responses API `web_search` tool.
 
+## Deploy to Timeweb Cloud
+
+The repository includes a `Dockerfile` for Timeweb Cloud App Platform.
+
+Create the application in Timeweb Cloud:
+
+1. Open **App Platform** and add an application of type **Dockerfile**.
+2. Connect the GitHub repository `Drovwosek/codex` and select branch `main`.
+3. Leave the project directory empty because the `Dockerfile` is in the repository root.
+4. Set the health-check path to `/api/health`.
+5. Add `OPENAI_API_KEY` as a secret environment variable and optionally set `OPENAI_MODEL`.
+6. Enable automatic deployment for new commits in `main`.
+
+App Platform reads port `8080` from the `Dockerfile`. It supplies HTTPS and a technical domain after the first deployment.
+
 ## Test
 
 ```bash
