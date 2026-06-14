@@ -45,7 +45,7 @@ Create the application in Timeweb Cloud:
 1. Open **App Platform** and add an application of type **Dockerfile**.
 2. Connect the GitHub repository `Drovwosek/codex` and select branch `main`.
 3. Leave the project directory empty because the `Dockerfile` is in the repository root.
-4. Set the health-check path to `/api/health`.
+4. Set the health-check path to `/api/health`. Timeweb will check it on the actual application port.
 5. Add `OPENAI_API_KEY` as a secret environment variable and optionally set `OPENAI_MODEL`.
 6. Enable automatic deployment for new commits in `main`.
 
