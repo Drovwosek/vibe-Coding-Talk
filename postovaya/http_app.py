@@ -3,8 +3,7 @@ import os
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from . import DEFAULT_MODEL
-from .openai_service import generate_post, research_venue
+from .openai_service import generate_post, generation_provider, research_venue
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -28,10 +27,13 @@ class AppHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/api/health":
+            provider = generation_provider()
             self.send_json(200, {
                 "ok": True,
-                "aiConfigured": bool(os.environ.get("OPENAI_API_KEY", "").strip()),
-                "model": os.environ.get("OPENAI_MODEL", DEFAULT_MODEL),
+                "aiConfigured": bool(provider["key"]),
+                "provider": provider["name"] if provider["key"] else None,
+                "model": provider["model"] if provider["key"] else None,
+                "researchConfigured": bool(os.environ.get("OPENAI_API_KEY", "").strip()),
             })
             return
         super().do_GET()
@@ -62,9 +64,10 @@ class AppHandler(SimpleHTTPRequestHandler):
 def run():
     host = os.environ.get("HOST", "127.0.0.1")
     port = int(os.environ.get("PORT", "8765"))
+    provider = generation_provider()
     server = ThreadingHTTPServer((host, port), AppHandler)
     print("Telegram Post Studio: http://%s:%s" % (host, port))
-    print("AI mode: %s" % ("OpenAI" if os.environ.get("OPENAI_API_KEY") else "demo"))
+    print("AI mode: %s" % (provider["name"].title() if provider["key"] else "demo"))
     try:
         server.serve_forever()
     except KeyboardInterrupt:

@@ -16,9 +16,9 @@ Reason: the first release is single-user and local-first. Images can be large, s
 
 ## AI integration
 
-Use the OpenAI Responses API from the server. Default to `gpt-5.5`, configurable through `OPENAI_MODEL`.
+Use an OpenAI-compatible Responses API from the server. Post generation supports Groq (`GROQ_API_KEY`) or OpenAI (`OPENAI_API_KEY`); when both are present, `AI_PROVIDER` selects one. Groq defaults to `openai/gpt-oss-20b` so the MVP can run on its free developer tier.
 
-Venue research uses the hosted `web_search` tool and strict structured output. Findings remain a preview until the marketer confirms them. Sources and uncertainties are stored with the profile so inferred brand context is not presented as unquestioned truth.
+Venue research remains on OpenAI because it uses the hosted `web_search` tool and strict structured output. Findings remain a preview until the marketer confirms them. Sources and uncertainties are stored with the profile so inferred brand context is not presented as unquestioned truth.
 
 ## Post formats
 

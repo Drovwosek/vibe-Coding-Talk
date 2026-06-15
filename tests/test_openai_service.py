@@ -1,3 +1,4 @@
+import json
 import os
 import unittest
 from unittest.mock import patch
@@ -6,6 +7,7 @@ from postovaya.openai_service import (
     extract_output_text,
     extract_sources,
     generate_post,
+    generation_provider,
     research_venue,
 )
 from tests.fixtures import PAYLOAD
@@ -28,6 +30,28 @@ class OpenAIServiceTests(unittest.TestCase):
         self.assertTrue(result["demo"])
         self.assertIn("Демо-черновик", result["text"])
         self.assertNotIn("OPENAI_API_KEY", result["text"])
+
+    @patch.dict(os.environ, {"GROQ_API_KEY": "test-key"}, clear=True)
+    def test_uses_groq_when_its_key_is_configured(self):
+        provider = generation_provider()
+        self.assertEqual(provider["name"], "groq")
+        self.assertEqual(provider["model"], "openai/gpt-oss-20b")
+
+    @patch("postovaya.openai_service.urllib.request.urlopen")
+    @patch.dict(os.environ, {"GROQ_API_KEY": "test-key"}, clear=True)
+    def test_generates_with_groq_responses_api(self, urlopen):
+        response = urlopen.return_value.__enter__.return_value
+        response.read.return_value = json.dumps({"output": [{
+            "type": "message",
+            "content": [{"type": "output_text", "text": "Готовый пост"}],
+        }]}).encode("utf-8")
+
+        result = generate_post(PAYLOAD)
+
+        request = urlopen.call_args.args[0]
+        self.assertEqual(request.full_url, "https://api.groq.com/openai/v1/responses")
+        self.assertEqual(result["text"], "Готовый пост")
+        self.assertEqual(result["provider"], "groq")
 
     def test_extracts_unique_sources(self):
         response = {"output": [{"action": {"sources": [

@@ -3,7 +3,7 @@ import os
 import urllib.error
 import urllib.request
 
-from . import DEFAULT_MODEL
+from . import DEFAULT_GROQ_MODEL, DEFAULT_MODEL
 from .prompts import VENUE_PROFILE_SCHEMA, build_prompt, text
 
 
@@ -32,12 +32,11 @@ def extract_sources(response):
     return sources[:12]
 
 
-def openai_request(body, timeout=90):
-    api_key = os.environ.get("OPENAI_API_KEY", "").strip()
+def api_request(url, api_key, body, provider, timeout=90):
     if not api_key:
-        raise RuntimeError("Для этой функции подключите OPENAI_API_KEY.")
+        raise RuntimeError("Для этой функции подключите API-ключ провайдера.")
     request = urllib.request.Request(
-        "https://api.openai.com/v1/responses",
+        url,
         data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
         headers={"Authorization": "Bearer " + api_key, "Content-Type": "application/json"},
         method="POST",
@@ -51,9 +50,42 @@ def openai_request(body, timeout=90):
             message = json.loads(detail).get("error", {}).get("message", detail)
         except json.JSONDecodeError:
             message = detail
-        raise RuntimeError("OpenAI API: " + text(message, 500))
+        raise RuntimeError(provider + " API: " + text(message, 500))
     except urllib.error.URLError as error:
-        raise RuntimeError("Не удалось подключиться к OpenAI API: " + str(error.reason))
+        raise RuntimeError("Не удалось подключиться к " + provider + " API: " + str(error.reason))
+
+
+def openai_request(body, timeout=90):
+    api_key = os.environ.get("OPENAI_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError("Для этой функции подключите OPENAI_API_KEY.")
+    return api_request(
+        "https://api.openai.com/v1/responses", api_key, body, "OpenAI", timeout
+    )
+
+
+def generation_provider():
+    requested = os.environ.get("AI_PROVIDER", "").strip().lower()
+    if requested not in ("", "openai", "groq"):
+        raise RuntimeError("AI_PROVIDER должен быть openai или groq.")
+
+    groq_key = os.environ.get("GROQ_API_KEY", "").strip()
+    openai_key = os.environ.get("OPENAI_API_KEY", "").strip()
+    provider = requested or ("groq" if groq_key else "openai")
+
+    if provider == "groq":
+        return {
+            "name": "groq",
+            "key": groq_key,
+            "model": os.environ.get("GROQ_MODEL", DEFAULT_GROQ_MODEL).strip() or DEFAULT_GROQ_MODEL,
+            "url": "https://api.groq.com/openai/v1/responses",
+        }
+    return {
+        "name": "openai",
+        "key": openai_key,
+        "model": os.environ.get("OPENAI_MODEL", DEFAULT_MODEL).strip() or DEFAULT_MODEL,
+        "url": "https://api.openai.com/v1/responses",
+    }
 
 
 def research_venue(payload):
@@ -107,17 +139,22 @@ def demo_post(payload):
 
 def generate_post(payload):
     prompt = build_prompt(payload)
-    if not os.environ.get("OPENAI_API_KEY", "").strip():
+    provider = generation_provider()
+    if not provider["key"]:
         return {"text": demo_post(payload), "demo": True, "model": None}
 
-    model = os.environ.get("OPENAI_MODEL", DEFAULT_MODEL).strip() or DEFAULT_MODEL
-    result = openai_request({
-        "model": model,
+    result = api_request(provider["url"], provider["key"], {
+        "model": provider["model"],
         "reasoning": {"effort": "low"},
         "instructions": "Ты редактор Telegram-каналов ресторанных брендов. Пиши естественно, точно и с уважением к читателю.",
         "input": prompt,
-    })
+    }, provider["name"].title())
     output = extract_output_text(result)
     if not output:
         raise RuntimeError("Модель не вернула текст публикации.")
-    return {"text": output, "demo": False, "model": model}
+    return {
+        "text": output,
+        "demo": False,
+        "model": provider["model"],
+        "provider": provider["name"],
+    }
