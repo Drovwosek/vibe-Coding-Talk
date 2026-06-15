@@ -3,7 +3,7 @@ import os
 import urllib.error
 import urllib.request
 
-from . import DEFAULT_GROQ_MODEL, DEFAULT_MODEL
+from . import DEFAULT_GROQ_MODEL, DEFAULT_MODEL, DEFAULT_OPENROUTER_MODEL
 from .prompts import VENUE_PROFILE_SCHEMA, build_prompt, text
 
 
@@ -66,13 +66,25 @@ def openai_request(body, timeout=90):
 
 def generation_provider():
     requested = os.environ.get("AI_PROVIDER", "").strip().lower()
-    if requested not in ("", "openai", "groq"):
-        raise RuntimeError("AI_PROVIDER должен быть openai или groq.")
+    if requested not in ("", "openai", "groq", "openrouter"):
+        raise RuntimeError("AI_PROVIDER должен быть openai, groq или openrouter.")
 
+    openrouter_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
     groq_key = os.environ.get("GROQ_API_KEY", "").strip()
     openai_key = os.environ.get("OPENAI_API_KEY", "").strip()
-    provider = requested or ("groq" if groq_key else "openai")
+    provider = requested or (
+        "openrouter" if openrouter_key else "groq" if groq_key else "openai"
+    )
 
+    if provider == "openrouter":
+        return {
+            "name": "openrouter",
+            "key": openrouter_key,
+            "model": os.environ.get(
+                "OPENROUTER_MODEL", DEFAULT_OPENROUTER_MODEL
+            ).strip() or DEFAULT_OPENROUTER_MODEL,
+            "url": "https://openrouter.ai/api/v1/responses",
+        }
     if provider == "groq":
         return {
             "name": "groq",

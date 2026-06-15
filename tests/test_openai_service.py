@@ -37,6 +37,13 @@ class OpenAIServiceTests(unittest.TestCase):
         self.assertEqual(provider["name"], "groq")
         self.assertEqual(provider["model"], "openai/gpt-oss-20b")
 
+    @patch.dict(os.environ, {"OPENROUTER_API_KEY": "test-key"}, clear=True)
+    def test_uses_openrouter_free_router(self):
+        provider = generation_provider()
+        self.assertEqual(provider["name"], "openrouter")
+        self.assertEqual(provider["model"], "openrouter/free")
+        self.assertEqual(provider["url"], "https://openrouter.ai/api/v1/responses")
+
     @patch("postovaya.openai_service.urllib.request.urlopen")
     @patch.dict(os.environ, {"GROQ_API_KEY": "test-key"}, clear=True)
     def test_generates_with_groq_responses_api(self, urlopen):

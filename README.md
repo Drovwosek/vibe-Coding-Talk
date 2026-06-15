@@ -9,7 +9,7 @@ Local-first MVP for restaurant marketers who prepare audience-specific Telegram 
 - researches a venue from its name using sourced OpenAI web search and saves only after review;
 - accepts a topic and source materials;
 - offers venue-specific post formats instead of arbitrary target lengths;
-- generates a Russian Telegram post with Groq or OpenAI Responses API;
+- generates a Russian Telegram post with OpenRouter, Groq, or OpenAI Responses API;
 - keeps an optional image attached to the draft without sending it to AI;
 - supports manual editing, copying, and draft history;
 - works in demo mode when no API key is configured.
@@ -41,11 +41,20 @@ export GROQ_MODEL="openai/gpt-oss-20b"
 python3 server.py
 ```
 
-Set `AI_PROVIDER=groq` or `AI_PROVIDER=openai` when both keys are configured.
-Groq handles post generation; venue research still requires `OPENAI_API_KEY`
+If Groq signup is unavailable, OpenRouter provides a free-model router:
+
+```bash
+export OPENROUTER_API_KEY="your-key"
+export OPENROUTER_MODEL="openrouter/free"
+python3 server.py
+```
+
+Set `AI_PROVIDER=openrouter`, `AI_PROVIDER=groq`, or `AI_PROVIDER=openai` when
+multiple keys are configured. OpenRouter or Groq handles post generation;
+venue research still requires `OPENAI_API_KEY`
 because that workflow relies on OpenAI hosted web search and strict structured output.
 
-Without either `GROQ_API_KEY` or `OPENAI_API_KEY`, the app returns a clearly marked demo post so the full UI can still be tested.
+Without `OPENROUTER_API_KEY`, `GROQ_API_KEY`, or `OPENAI_API_KEY`, the app returns a clearly marked demo post so the full UI can still be tested.
 Venue research requires `OPENAI_API_KEY` because it uses the Responses API `web_search` tool.
 
 ## Deploy to Timeweb Cloud
@@ -58,7 +67,7 @@ Create the application in Timeweb Cloud:
 2. Connect the GitHub repository `Drovwosek/codex` and select branch `main`.
 3. Leave the project directory empty because the `Dockerfile` is in the repository root.
 4. Set the health-check path to `/api/health`. The Docker image also includes a Python-based healthcheck compatible with the slim base image.
-5. For free-tier generation, add `GROQ_API_KEY` as a secret and optionally set `GROQ_MODEL`. Add `OPENAI_API_KEY` only if venue research is required.
+5. For free-tier generation, add `OPENROUTER_API_KEY` as a secret and optionally set `OPENROUTER_MODEL`. Groq remains supported through `GROQ_API_KEY`; add `OPENAI_API_KEY` only if venue research is required.
 6. Enable automatic deployment for new commits in `main`.
 
 App Platform reads port `8080` from the `Dockerfile`. It supplies HTTPS and a technical domain after the first deployment.
