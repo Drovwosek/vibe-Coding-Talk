@@ -107,11 +107,14 @@ function renderDrafts(query = "") {
   els.drafts.innerHTML = drafts.map(draft => {
     const index = state.drafts.indexOf(draft);
     return `
-    <button class="draft-item" type="button" data-draft="${index}">
-      <span><strong>${escapeHtml(draft.topic || "Без темы")}</strong>
-      <small>${escapeHtml(draft.venue)} · ${escapeHtml(draft.audience || "Аудитория не указана")}</small></span>
-      <span class="draft-item-end"><time>${new Date(draft.createdAt).toLocaleDateString("ru-RU")}</time><span class="draft-item-action">Продолжить редактирование</span><span class="draft-chevron" aria-hidden="true">›</span></span>
-    </button>`;
+    <article class="draft-item">
+      <button class="draft-open" type="button" data-draft="${index}">
+        <span><strong>${escapeHtml(draft.topic || "Без темы")}</strong>
+        <small>${escapeHtml(draft.venue)} · ${escapeHtml(draft.audience || "Аудитория не указана")}</small></span>
+        <span class="draft-item-end"><time>${new Date(draft.createdAt).toLocaleDateString("ru-RU")}</time><span class="draft-item-action">Продолжить редактирование</span><span class="draft-chevron" aria-hidden="true">›</span></span>
+      </button>
+      <button class="draft-delete" type="button" data-remove-draft="${index}" aria-label="Удалить черновик">Удалить</button>
+    </article>`;
   }).join("");
 }
 
@@ -248,6 +251,17 @@ function openDraft(index) {
   switchView("editor");
 }
 
+function deleteDraft(index) {
+  const draft = state.drafts[index];
+  if (!draft) return;
+  if (!window.confirm(`Удалить черновик «${draft.topic || "Без темы"}»?`)) return;
+  state.drafts.splice(index, 1);
+  save(STORAGE.drafts, state.drafts);
+  renderDrafts(els.draftSearch.value);
+  if (activeVenueId) renderVenueDetail();
+  showToast("Черновик удалён");
+}
+
 function startNewPost() {
   els.topic.value = "";
   els.materials.value = "";
@@ -305,7 +319,7 @@ function renderVenueDetail() {
   const drafts = state.drafts.filter(draft => draft.venueId === venue.id || (!draft.venueId && draft.venue === venue.name));
   els.venueDraftList.innerHTML = drafts.map(draft => {
     const index = state.drafts.indexOf(draft);
-    return `<button class="detail-list-item detail-draft" type="button" data-draft="${index}"><span><strong>${escapeHtml(draft.topic || "Без темы")}</strong><small>${new Date(draft.createdAt).toLocaleDateString("ru-RU")}</small></span><span class="venue-chevron">›</span></button>`;
+    return `<div class="detail-list-item detail-draft-row"><button class="detail-draft" type="button" data-draft="${index}"><span><strong>${escapeHtml(draft.topic || "Без темы")}</strong><small>${new Date(draft.createdAt).toLocaleDateString("ru-RU")}</small></span><span class="venue-chevron">›</span></button><button class="button button--danger button--xs" type="button" data-remove-draft="${index}">Удалить</button></div>`;
   }).join("") || '<p class="detail-empty">У этого заведения пока нет сохранённых черновиков.</p>';
 }
 
@@ -428,6 +442,11 @@ els.imageInput.addEventListener("change", () => {
   syncResultImage();
 });
 els.drafts.addEventListener("click", event => {
+  const removeButton = event.target.closest("[data-remove-draft]");
+  if (removeButton) {
+    deleteDraft(Number(removeButton.dataset.removeDraft));
+    return;
+  }
   const button = event.target.closest("[data-draft]");
   if (button) openDraft(Number(button.dataset.draft));
 });
@@ -498,6 +517,11 @@ els.venueTree.addEventListener("keydown", event => {
   }
 });
 els.venueDetailView.addEventListener("click", event => {
+  const removeDraftButton = event.target.closest("[data-remove-draft]");
+  if (removeDraftButton) {
+    deleteDraft(Number(removeDraftButton.dataset.removeDraft));
+    return;
+  }
   const draftButton = event.target.closest("[data-draft]");
   if (draftButton) {
     openDraft(Number(draftButton.dataset.draft));
