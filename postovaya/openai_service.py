@@ -4,7 +4,7 @@ import urllib.error
 import urllib.request
 
 from . import DEFAULT_GROQ_MODEL, DEFAULT_MODEL, DEFAULT_OPENROUTER_MODEL
-from .prompts import VENUE_PROFILE_SCHEMA, build_prompt, text
+from .prompts import VENUE_PROFILE_SCHEMA, build_prompt, load_prompt_template, text
 
 
 def extract_output_text(response):
@@ -106,19 +106,17 @@ def research_venue(payload):
     if not name:
         raise ValueError("Укажите название заведения.")
     model = os.environ.get("OPENAI_MODEL", DEFAULT_MODEL).strip() or DEFAULT_MODEL
-    prompt = f"""Исследуй ресторанное заведение «{name}».
-Дополнительная подсказка для точного поиска: {hint or 'не указана'}.
-
-Найди официальный сайт, карты, публикации заведения и надёжные публичные упоминания. Сформируй рабочий профиль для маркетолога.
-Разделяй факты и интерпретацию: known_facts — только подтверждённое источниками; uncertainties — всё неоднозначное или требующее проверки.
-Не придумывай сведения. recommended_styles — 3–5 коротких названий форматов Telegram-постов с пояснением подачи, соответствующих найденному бренду. Не выполняй SWOT-анализ и не выдумывай целевую аудиторию."""
+    prompt = load_prompt_template("venue_research_prompt.md").format(
+        name=name,
+        hint=hint or "не указана",
+    )
     result = openai_request({
         "model": model,
         "reasoning": {"effort": "medium"},
         "tools": [{"type": "web_search"}],
         "tool_choice": "auto",
         "include": ["web_search_call.action.sources"],
-        "instructions": "Ты аккуратный бренд-исследователь ресторанного рынка. Возвращай только проверяемый профиль и явно отмечай неопределённость.",
+        "instructions": load_prompt_template("venue_research_instructions.md"),
         "input": prompt,
         "text": {"format": {
             "type": "json_schema", "name": "venue_profile", "strict": True,
@@ -158,7 +156,7 @@ def generate_post(payload):
     result = api_request(provider["url"], provider["key"], {
         "model": provider["model"],
         "reasoning": {"effort": "low"},
-        "instructions": "Ты редактор Telegram-каналов ресторанных брендов. Пиши естественно, точно и с уважением к читателю.",
+        "instructions": load_prompt_template("post_generation_instructions.md"),
         "input": prompt,
     }, provider["name"].title())
     output = extract_output_text(result)

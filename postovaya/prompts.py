@@ -1,3 +1,13 @@
+from pathlib import Path
+
+
+AGENTS_DIR = Path(__file__).resolve().parent / "agents"
+
+
+def load_prompt_template(name):
+    return (AGENTS_DIR / name).read_text(encoding="utf-8").strip()
+
+
 def text(value, limit):
     if value is None:
         return ""
@@ -30,35 +40,18 @@ def build_prompt(payload):
         raise ValueError("Выберите сегмент аудитории.")
     validate_venue_audience(venue, audience)
 
-    return f"""Подготовь один готовый пост для Telegram на русском языке.
-
-Заведение:
-- Название: {text(venue.get('name'), 120)}
-- Описание и особенности: {text(venue.get('description'), 1200) or 'не указаны'}
-- Голос бренда: {text(venue.get('voice'), 600) or 'дружелюбный, конкретный, без канцелярита'}
-- Позиционирование: {text(venue.get('positioning'), 800) or 'не указано'}
-
-Целевой сегмент:
-- Название: {text(audience.get('name'), 120)}
-- Кто эти люди: {text(audience.get('description'), 1200) or 'не указано'}
-- Что для них важно: {text(audience.get('needs'), 800) or 'не указано'}
-
-Задача публикации:
-- Тема или инфоповод: {topic}
-- Формат публикации: {post_style}
-
-Материалы маркетолога:
-{materials or 'Дополнительные материалы не приложены.'}
-
-Требования:
-1. Сразу выдай только финальный текст поста, без комментариев и заголовков от себя.
-2. Опирайся только на предоставленные факты. Не придумывай цены, даты, адреса, состав блюд или условия акции.
-3. Сделай начало заметным в ленте, но не используй кликбейт.
-4. Покажи релевантную сегменту пользу через конкретику.
-5. Используй короткие абзацы, подходящие для Telegram.
-6. Эмодзи допустимы умеренно. Хэштеги добавляй только если они действительно полезны, не более трех.
-7. Призыв к действию добавляй только если он естественно следует из темы и материалов.
-8. Не упоминай, что текст создан ИИ."""
+    return load_prompt_template("post_generation_prompt.md").format(
+        venue_name=text(venue.get("name"), 120),
+        venue_description=text(venue.get("description"), 1200) or "не указаны",
+        venue_voice=text(venue.get("voice"), 600) or "дружелюбный, конкретный, без канцелярита",
+        venue_positioning=text(venue.get("positioning"), 800) or "не указано",
+        audience_name=text(audience.get("name"), 120),
+        audience_description=text(audience.get("description"), 1200) or "не указано",
+        audience_needs=text(audience.get("needs"), 800) or "не указано",
+        topic=topic,
+        post_style=post_style,
+        materials=materials or "Дополнительные материалы не приложены.",
+    )
 
 
 VENUE_PROFILE_SCHEMA = {
@@ -79,4 +72,3 @@ VENUE_PROFILE_SCHEMA = {
     ],
     "additionalProperties": False,
 }
-
