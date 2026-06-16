@@ -18,6 +18,7 @@
         <button class="nav-item active" type="button" data-view="profiles"><span>◫</span>Заведения</button>
         <button class="nav-item" type="button" data-view="editor"><span>✦</span>Новая публикация</button>
         <button class="nav-item" type="button" data-view="drafts"><span>▤</span>Черновики</button>
+        <button class="nav-item" type="button" data-view="prompts"><span>⚙</span>Промпты</button>
       </nav>
       <div class="sidebar-bottom">
         <span class="status-pill" id="aiStatus"><span class="status-dot"></span>Проверяем AI</span>
@@ -196,6 +197,20 @@
               <label class="search-field"><span>⌕</span><input id="draftSearch" type="search" placeholder="Найти по теме или заведению"></label>
             </div>
             <div id="draftList" class="draft-list"><p class="muted">Сохранённых черновиков пока нет.</p></div>
+          </div>
+        </section>
+
+        <section class="page-view hidden" id="promptsView">
+          <div class="page-heading">
+            <div><h1>Промпты</h1><p>Шаблоны, которые сервер использует при следующем запросе к модели.</p></div>
+            <span class="debug-badge">Отладка</span>
+          </div>
+          <div class="prompt-debug card">
+            <div class="prompt-debug-header">
+              <div><strong>Рабочие шаблоны</strong><small>Изменения применяются без перезапуска сервера</small></div>
+              <button class="button button--secondary button--sm" id="reloadPrompts" type="button">Обновить</button>
+            </div>
+            <div id="promptList" class="prompt-list"><p class="muted">Загружаем промпты…</p></div>
           </div>
         </section>
       </main>

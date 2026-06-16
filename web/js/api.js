@@ -17,7 +17,8 @@
   app.api = {
     health: () => requestJson("/api/health"),
     generatePost: payload => postJson("/api/generate", payload),
+    promptTemplates: () => requestJson("/api/prompts"),
+    updatePromptTemplate: payload => postJson("/api/prompts", payload),
     researchVenue: payload => postJson("/api/research-venue", payload),
   };
 })(window.Postovaya = window.Postovaya || {});
-

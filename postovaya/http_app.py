@@ -4,6 +4,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from .openai_service import generate_post, generation_provider, research_venue
+from .prompts import get_editable_prompt_templates, update_editable_prompt_template
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -36,11 +37,15 @@ class AppHandler(SimpleHTTPRequestHandler):
                 "researchConfigured": bool(os.environ.get("OPENAI_API_KEY", "").strip()),
             })
             return
+        if self.path == "/api/prompts":
+            self.send_json(200, get_editable_prompt_templates())
+            return
         super().do_GET()
 
     def do_POST(self):
         handlers = {
             "/api/generate": generate_post,
+            "/api/prompts": update_editable_prompt_template,
             "/api/research-venue": research_venue,
         }
         handler = handlers.get(self.path)

@@ -1,11 +1,90 @@
 from pathlib import Path
+from string import Formatter
 
 
 AGENTS_DIR = Path(__file__).resolve().parent / "agents"
+EDITABLE_PROMPTS = {
+    "post_generation": {
+        "title": "Генерация поста",
+        "filename": "post_generation_prompt.md",
+        "placeholders": {
+            "venue_name": "Север",
+            "venue_description": "Городское бистро",
+            "venue_voice": "тёплый",
+            "venue_positioning": "городское бистро рядом с офисами",
+            "audience_name": "Офисные команды",
+            "audience_description": "работают рядом",
+            "audience_needs": "быстрый обед",
+            "topic": "Новое обеденное меню",
+            "post_style": "короткий анонс",
+            "materials": "Будни, с 12:00 до 16:00",
+        },
+    },
+    "venue_research": {
+        "title": "Исследование заведения",
+        "filename": "venue_research_prompt.md",
+        "placeholders": {
+            "name": "Север",
+            "hint": "Москва, ресторан",
+        },
+    },
+}
 
 
 def load_prompt_template(name):
     return (AGENTS_DIR / name).read_text(encoding="utf-8").strip()
+
+
+def validate_prompt_template(template, placeholders):
+    try:
+        used = {
+            field_name.split(".", 1)[0].split("[", 1)[0]
+            for _, field_name, _, _ in Formatter().parse(template)
+            if field_name
+        }
+        unknown = sorted(used - set(placeholders))
+        if unknown:
+            raise ValueError("Неизвестные плейсхолдеры: " + ", ".join(unknown))
+        template.format(**placeholders)
+    except KeyError as error:
+        raise ValueError("Не хватает плейсхолдера: " + str(error))
+    except ValueError as error:
+        raise ValueError("Ошибка шаблона промпта: " + str(error))
+
+
+def editable_prompt_payload(key, config):
+    return {
+        "key": key,
+        "title": config["title"],
+        "filename": config["filename"],
+        "content": load_prompt_template(config["filename"]),
+    }
+
+
+def get_editable_prompt_templates():
+    return {
+        "prompts": [
+            editable_prompt_payload(key, config)
+            for key, config in EDITABLE_PROMPTS.items()
+        ]
+    }
+
+
+def update_editable_prompt_template(payload):
+    key = text(payload.get("key"), 80)
+    config = EDITABLE_PROMPTS.get(key)
+    if not config:
+        raise ValueError("Неизвестный промпт.")
+    content = payload.get("content")
+    if not isinstance(content, str):
+        raise ValueError("Передайте текст промпта.")
+    if not content.strip():
+        raise ValueError("Промпт не может быть пустым.")
+    if len(content) > 60_000:
+        raise ValueError("Промпт слишком длинный.")
+    validate_prompt_template(content, config["placeholders"])
+    (AGENTS_DIR / config["filename"]).write_text(content.rstrip() + "\n", encoding="utf-8")
+    return {"prompt": editable_prompt_payload(key, config)}
 
 
 def text(value, limit):

@@ -13,18 +13,19 @@ const els = {
   imageInput: $("#imageInput"), imageChip: $("#imageChip"), imageThumb: $("#imageThumb"),
   imageName: $("#imageName"), resultImage: $("#resultImage"), attached: $("#attachedPreview"),
   drafts: $("#draftList"), aiStatus: $("#aiStatus"), draftSearch: $("#draftSearch"),
-  profilesView: $("#profilesView"), venueDetailView: $("#venueDetailView"), editorView: $("#editorView"), draftsView: $("#draftsView"),
+  profilesView: $("#profilesView"), venueDetailView: $("#venueDetailView"), editorView: $("#editorView"), draftsView: $("#draftsView"), promptsView: $("#promptsView"),
   sidebarToggle: $("#sidebarToggle"), venueTree: $("#venueTree"), profileName: $("#profileName"),
   venueDialog: $("#venueDialog"), venueForm: $("#venueForm"), venueFormError: $("#venueFormError"), audienceDialog: $("#audienceDialog"),
   audienceForm: $("#audienceForm"), audienceFormError: $("#audienceFormError"), audienceName: $("#audienceName"), audiencePortrait: $("#audiencePortrait"), audienceNeeds: $("#audienceNeeds"),
   readinessBanner: $("#readinessBanner"), venueDetailForm: $("#venueDetailForm"), venueDetailTitle: $("#venueDetailTitle"),
   venueDetailStatus: $("#venueDetailStatus"), venueDetailName: $("#venueDetailName"), venueDetailDescription: $("#venueDetailDescription"),
   venueDetailVoice: $("#venueDetailVoice"), venueDetailError: $("#venueDetailError"), venueAudienceList: $("#venueAudienceList"), venueDraftList: $("#venueDraftList"),
-  toast: $("#toast"), toastMessage: $("#toastMessage"),
+  toast: $("#toast"), toastMessage: $("#toastMessage"), promptList: $("#promptList"),
 };
 
 let toastTimer;
 let activeVenueId = "";
+let promptTemplatesLoaded = false;
 const dialogSnapshots = new Map();
 
 function setResultStatus(status) {
@@ -123,6 +124,7 @@ function switchView(view) {
   els.venueDetailView.classList.toggle("hidden", view !== "venue");
   els.editorView.classList.toggle("hidden", view !== "editor");
   els.draftsView.classList.toggle("hidden", view !== "drafts");
+  els.promptsView.classList.toggle("hidden", view !== "prompts");
   document.querySelectorAll("[data-view]").forEach(button => {
     const active = button.dataset.view === view;
     button.classList.toggle("active", active);
@@ -131,6 +133,7 @@ function switchView(view) {
   });
   if (view === "profiles") renderProfiles();
   if (view === "venue") renderVenueDetail();
+  if (view === "prompts") loadPromptTemplates();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -260,6 +263,49 @@ function deleteDraft(index) {
   renderDrafts(els.draftSearch.value);
   if (activeVenueId) renderVenueDetail();
   showToast("Черновик удалён");
+}
+
+function renderPromptTemplates(prompts) {
+  els.promptList.innerHTML = prompts.map(prompt => `
+    <section class="prompt-panel" data-prompt-panel="${prompt.key}">
+      <div class="prompt-panel-header">
+        <div><h2>${escapeHtml(prompt.title)}</h2><small>${escapeHtml(prompt.filename)}</small></div>
+        <span class="prompt-state" data-prompt-state="${prompt.key}">Готов к правке</span>
+      </div>
+      <textarea class="prompt-editor" data-prompt-key="${prompt.key}" spellcheck="false">${escapeHtml(prompt.content)}</textarea>
+      <div class="prompt-actions">
+        <button class="button button--primary button--sm" type="button" data-save-prompt="${prompt.key}">Сохранить промпт</button>
+      </div>
+    </section>
+  `).join("");
+}
+
+async function loadPromptTemplates(force = false) {
+  if (promptTemplatesLoaded && !force) return;
+  els.promptList.innerHTML = '<p class="muted">Загружаем промпты…</p>';
+  try {
+    const data = await api.promptTemplates();
+    renderPromptTemplates(data.prompts || []);
+    promptTemplatesLoaded = true;
+  } catch (error) {
+    els.promptList.innerHTML = `<p class="form-error">${escapeHtml(error.message)}</p>`;
+  }
+}
+
+async function savePromptTemplate(key) {
+  const textarea = els.promptList.querySelector(`textarea[data-prompt-key="${key}"]`);
+  const state = els.promptList.querySelector(`[data-prompt-state="${key}"]`);
+  if (!textarea) return;
+  if (state) state.textContent = "Сохраняем…";
+  try {
+    const data = await api.updatePromptTemplate({ key, content: textarea.value });
+    textarea.value = data.prompt.content;
+    if (state) state.textContent = "Сохранён";
+    showToast("Промпт сохранён");
+  } catch (error) {
+    if (state) state.textContent = "Ошибка";
+    showToast(error.message);
+  }
 }
 
 function startNewPost() {
@@ -423,6 +469,10 @@ els.result.addEventListener("input", updateResultCount);
 $("#saveDraft").addEventListener("click", saveDraft);
 $("#copyPost").addEventListener("click", copyPost);
 $("#removeImage").addEventListener("click", removeImage);
+$("#reloadPrompts").addEventListener("click", () => {
+  promptTemplatesLoaded = false;
+  loadPromptTemplates(true);
+});
 els.imageInput.addEventListener("change", () => {
   const file = els.imageInput.files[0];
   if (!file) return;
@@ -451,6 +501,10 @@ els.drafts.addEventListener("click", event => {
   if (button) openDraft(Number(button.dataset.draft));
 });
 els.draftSearch.addEventListener("input", () => renderDrafts(els.draftSearch.value));
+els.promptList.addEventListener("click", event => {
+  const button = event.target.closest("[data-save-prompt]");
+  if (button) savePromptTemplate(button.dataset.savePrompt);
+});
 document.querySelectorAll("[data-view]").forEach(button => {
   button.addEventListener("click", () => switchView(button.dataset.view));
 });
