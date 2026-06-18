@@ -16,7 +16,7 @@ Reason: the first release is single-user and local-first. Images can be large, s
 
 ## AI integration
 
-Use an OpenAI-compatible Responses API from the server. Post generation supports OpenRouter (`OPENROUTER_API_KEY`), Groq (`GROQ_API_KEY`), or OpenAI (`OPENAI_API_KEY`); when multiple keys are present, `AI_PROVIDER` selects one. OpenRouter defaults to `openrouter/free`, while Groq defaults to `openai/gpt-oss-20b`, so the MVP can run on a free developer tier.
+Use an OpenAI-compatible Responses API from the server. Post generation supports OpenRouter (`OPENROUTER_API_KEY`), Groq (`GROQ_API_KEY`), Apinet (`APINET_API_KEY`), or OpenAI (`OPENAI_API_KEY`); when multiple keys are present, `AI_PROVIDER` selects one. OpenRouter defaults to `openrouter/free`, Groq defaults to `openai/gpt-oss-20b`, and Apinet defaults to `qwen3-vl-plus`, so the MVP can run on a free developer tier or a custom chat-completions endpoint.
 
 Venue research remains on OpenAI because it uses the hosted `web_search` tool and strict structured output. Findings remain a preview until the marketer confirms them. Sources and uncertainties are stored with the profile so inferred brand context is not presented as unquestioned truth.
 
