@@ -18,23 +18,6 @@ def extract_output_text(response):
     return "\n".join(parts).strip()
 
 
-def extract_chat_output_text(response):
-    parts = []
-    for choice in response.get("choices", []):
-        message = choice.get("message") or {}
-        content = message.get("content")
-        if isinstance(content, str) and content.strip():
-            parts.append(content)
-            continue
-        if isinstance(content, list):
-            for item in content:
-                if isinstance(item, str) and item.strip():
-                    parts.append(item)
-                elif isinstance(item, dict) and item.get("text"):
-                    parts.append(item["text"])
-    return "\n".join(parts).strip()
-
-
 def extract_sources(response):
     sources = []
     seen = set()
@@ -70,12 +53,6 @@ def api_request(url, api_key, body, provider, timeout=90):
         raise RuntimeError(provider + " API: " + text(message, 500))
     except urllib.error.URLError as error:
         raise RuntimeError("Не удалось подключиться к " + provider + " API: " + str(error.reason))
-
-
-def chat_completion_request(url, api_key, body, provider, timeout=90):
-    return api_request(url, api_key, body, provider, timeout)
-
-
 def openai_request(body, timeout=90):
     api_key = os.environ.get("OPENAI_API_KEY", "").strip()
     if not api_key:
@@ -85,26 +62,16 @@ def openai_request(body, timeout=90):
     )
 
 
-def apinet_request(body, timeout=90):
-    api_key = os.environ.get("APINET_API_KEY", "").strip()
-    if not api_key:
-        raise RuntimeError("Для этой функции подключите APINET_API_KEY.")
-    base_url = os.environ.get("APINET_BASE_URL", "https://apinet.cloud/v1").strip()
-    url = base_url.rstrip("/") + "/chat/completions"
-    return chat_completion_request(url, api_key, body, "Apinet", timeout)
-
-
 def generation_provider():
     requested = os.environ.get("AI_PROVIDER", "").strip().lower()
-    if requested not in ("", "openai", "groq", "openrouter", "apinet"):
-        raise RuntimeError("AI_PROVIDER должен быть openai, groq, openrouter или apinet.")
+    if requested not in ("", "openai", "groq", "openrouter"):
+        raise RuntimeError("AI_PROVIDER должен быть openai, groq или openrouter.")
 
     openrouter_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
     groq_key = os.environ.get("GROQ_API_KEY", "").strip()
-    apinet_key = os.environ.get("APINET_API_KEY", "").strip()
     openai_key = os.environ.get("OPENAI_API_KEY", "").strip()
     provider = requested or (
-        "openrouter" if openrouter_key else "groq" if groq_key else "apinet" if apinet_key else "openai"
+        "openrouter" if openrouter_key else "groq" if groq_key else "openai"
     )
 
     if provider == "openrouter":
@@ -115,7 +82,6 @@ def generation_provider():
                 "OPENROUTER_MODEL", DEFAULT_OPENROUTER_MODEL
             ).strip() or DEFAULT_OPENROUTER_MODEL,
             "url": "https://openrouter.ai/api/v1/responses",
-            "kind": "responses",
         }
     if provider == "groq":
         return {
@@ -123,23 +89,12 @@ def generation_provider():
             "key": groq_key,
             "model": os.environ.get("GROQ_MODEL", DEFAULT_GROQ_MODEL).strip() or DEFAULT_GROQ_MODEL,
             "url": "https://api.groq.com/openai/v1/responses",
-            "kind": "responses",
-        }
-    if provider == "apinet":
-        return {
-            "name": "apinet",
-            "key": apinet_key,
-            "model": os.environ.get("APINET_MODEL", "qwen3-vl-plus").strip() or "qwen3-vl-plus",
-            "url": os.environ.get("APINET_BASE_URL", "https://apinet.cloud/v1").strip().rstrip("/")
-            + "/chat/completions",
-            "kind": "chat_completions",
         }
     return {
         "name": "openai",
         "key": openai_key,
         "model": os.environ.get("OPENAI_MODEL", DEFAULT_MODEL).strip() or DEFAULT_MODEL,
         "url": "https://api.openai.com/v1/responses",
-        "kind": "responses",
     }
 
 
@@ -196,24 +151,13 @@ def generate_post(payload):
     if not provider["key"]:
         return {"text": demo_post(payload), "demo": True, "model": None}
 
-    instructions = load_prompt_template("post_generation_instructions.md")
-    if provider["kind"] == "chat_completions":
-        result = apinet_request({
-            "model": provider["model"],
-            "messages": [
-                {"role": "system", "content": instructions},
-                {"role": "user", "content": prompt},
-            ],
-        })
-        output = extract_chat_output_text(result)
-    else:
-        result = api_request(provider["url"], provider["key"], {
-            "model": provider["model"],
-            "reasoning": {"effort": "low"},
-            "instructions": instructions,
-            "input": prompt,
-        }, provider["name"].title())
-        output = extract_output_text(result)
+    result = api_request(provider["url"], provider["key"], {
+        "model": provider["model"],
+        "reasoning": {"effort": "low"},
+        "instructions": load_prompt_template("post_generation_instructions.md"),
+        "input": prompt,
+    }, provider["name"].title())
+    output = extract_output_text(result)
     if not output:
         raise RuntimeError("Модель не вернула текст публикации.")
     return {

@@ -4,7 +4,6 @@ import unittest
 from unittest.mock import patch
 
 from postovaya.openai_service import (
-    extract_chat_output_text,
     extract_output_text,
     extract_sources,
     generate_post,
@@ -25,13 +24,6 @@ class OpenAIServiceTests(unittest.TestCase):
         ]}
         self.assertEqual(extract_output_text(response), "Первая часть\nВторая часть")
 
-    def test_extracts_chat_completion_text(self):
-        response = {"choices": [
-            {"message": {"content": "Привет"}},
-            {"message": {"content": [{"text": "Мир"}]}},
-        ]}
-        self.assertEqual(extract_chat_output_text(response), "Привет\nМир")
-
     @patch.dict(os.environ, {}, clear=True)
     def test_demo_mode_without_api_key(self):
         result = generate_post(PAYLOAD)
@@ -51,35 +43,6 @@ class OpenAIServiceTests(unittest.TestCase):
         self.assertEqual(provider["name"], "openrouter")
         self.assertEqual(provider["model"], "openrouter/free")
         self.assertEqual(provider["url"], "https://openrouter.ai/api/v1/responses")
-
-    @patch.dict(os.environ, {"APINET_API_KEY": "test-key"}, clear=True)
-    def test_uses_apinet_when_its_key_is_configured(self):
-        provider = generation_provider()
-        self.assertEqual(provider["name"], "apinet")
-        self.assertEqual(provider["model"], "qwen3-vl-plus")
-        self.assertEqual(provider["url"], "https://apinet.cloud/v1/chat/completions")
-        self.assertEqual(provider["kind"], "chat_completions")
-
-    @patch("postovaya.openai_service.urllib.request.urlopen")
-    @patch.dict(os.environ, {"APINET_API_KEY": "test-key", "AI_PROVIDER": "apinet"}, clear=True)
-    def test_generates_with_apinet_chat_completions(self, urlopen):
-        response = urlopen.return_value.__enter__.return_value
-        response.read.return_value = json.dumps({
-            "choices": [{
-                "message": {"content": "Готовый пост"},
-            }]
-        }).encode("utf-8")
-
-        result = generate_post(PAYLOAD)
-
-        request = urlopen.call_args.args[0]
-        body = json.loads(request.data.decode("utf-8"))
-        self.assertEqual(request.full_url, "https://apinet.cloud/v1/chat/completions")
-        self.assertEqual(body["model"], "qwen3-vl-plus")
-        self.assertEqual(body["messages"][0]["role"], "system")
-        self.assertEqual(body["messages"][1]["role"], "user")
-        self.assertEqual(result["text"], "Готовый пост")
-        self.assertEqual(result["provider"], "apinet")
 
     @patch("postovaya.openai_service.urllib.request.urlopen")
     @patch.dict(os.environ, {"GROQ_API_KEY": "test-key"}, clear=True)
