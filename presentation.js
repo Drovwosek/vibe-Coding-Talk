@@ -60,7 +60,8 @@
 
   document.addEventListener('keydown', event => {
     if (isInteractiveTarget(event.target)) return;
-    if (['ArrowRight', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); goNext(); }
+    if (event.key === ' ') { event.preventDefault(); document.body.classList.toggle('parrot-visible'); }
+    if (['ArrowRight', 'PageDown'].includes(event.key)) { event.preventDefault(); goNext(); }
     if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); goPrev(); }
     if (event.key === 'Home') { event.preventDefault(); show(0); }
     if (event.key === 'End') { event.preventDefault(); show(slides.length - 1); }

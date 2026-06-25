@@ -207,6 +207,23 @@ kbd { border: 1px solid #bbb; padding: .1rem .35rem; background: white; font-fam
 .current-title { color: var(--muted); font-size: .8rem; letter-spacing: .015em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 1rem; }
 body.chrome-hidden .chrome { opacity: 0; pointer-events: none; }
 
+.parrot-overlay {
+  position: fixed;
+  right: clamp(1rem, 3vw, 2.5rem);
+  bottom: -1.2rem;
+  z-index: 60;
+  width: clamp(165px, 19.5vw, 270px);
+  height: auto;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(12px) scale(.96);
+  transition: opacity .16s ease, transform .16s ease;
+}
+body.parrot-visible .parrot-overlay {
+  opacity: 1;
+  transform: none;
+}
+
 @media (max-width: 760px) {
   .slide { justify-content: flex-start !important; padding-top: 5rem; }
   .split, .requirements, .outcome-grid, .choice-grid, .production-grid { grid-template-columns: 1fr; }
@@ -227,6 +244,7 @@ body.chrome-hidden .chrome { opacity: 0; pointer-events: none; }
   .role-row i { width: 1rem; }
   .current-title { display: none; }
   .chrome-row { grid-template-columns: 3.6rem auto 1fr 3.6rem 3.6rem; }
+  .parrot-overlay { width: 144px; bottom: -1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
