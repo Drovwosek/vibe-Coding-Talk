@@ -3,248 +3,38 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="AI-редактор Telegram-постов для ресторанного маркетинга">
-  <title>Постовая — Telegram-посты для ресторанов</title>
+  <meta name="description" content="VPN box: готовая коробка для Windows и Mac">
+  <title>VPN Box</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app-layout">
-    <aside class="sidebar">
-      <a class="brand" href="#profiles" aria-label="Постовая">
-        <span class="brand-mark">П</span>
-        <span>Постовая</span>
-      </a>
-      <nav class="main-nav" aria-label="Основная навигация">
-        <button class="nav-item active" type="button" data-view="profiles"><span>◫</span>Заведения</button>
-        <button class="nav-item" type="button" data-view="editor"><span>✦</span>Новая публикация</button>
-        <button class="nav-item" type="button" data-view="drafts"><span>▤</span>Черновики</button>
-        <button class="nav-item" type="button" data-view="prompts"><span>⚙</span>Промпты</button>
-      </nav>
-      <div class="sidebar-bottom">
-        <span class="status-pill" id="aiStatus"><span class="status-dot"></span>Проверяем AI</span>
-        <p>Данные хранятся в этом браузере</p>
-        <p class="app-version">Версия 0.1.0</p>
+  <main class="box-page">
+    <section class="hero-card" aria-labelledby="title">
+      <div class="hero-kicker">готовая коробка</div>
+      <h1 id="title">VPN Box</h1>
+      <p class="hero-copy">Скачай коробку, запусти, и VPN будет готов к работе без лишних экранов и без админки.</p>
+
+      <div class="download-grid" aria-label="Скачать коробку">
+        <a class="download-button download-button--windows" href="/download/windows">
+          <span class="download-button__label">Скачать для Windows</span>
+          <span class="download-button__hint">zip с готовой коробкой</span>
+        </a>
+        <a class="download-button download-button--mac" href="/download/mac">
+          <span class="download-button__label">Скачать для Mac</span>
+          <span class="download-button__hint">zip с готовой коробкой</span>
+        </a>
       </div>
-    </aside>
 
-    <div class="main-area">
-      <header class="topbar">
-        <div class="topbar-start">
-          <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="Скрыть боковую панель" title="Скрыть боковую панель">☰</button>
-        </div>
-      </header>
+      <div class="box-rail" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
 
-      <main class="app-shell">
-        <section class="page-view profiles-view" id="profilesView">
-          <div class="page-heading">
-            <div><h1>Заведения</h1><p>У каждого заведения свой профиль и собственные аудитории.</p></div>
-          </div>
-
-          <div class="profiles-layout">
-            <div class="readiness-banner hidden" id="readinessBanner">
-              <div><strong>Всё готово — теперь можно создавать посты</strong><small>Выберите готовое заведение и его аудиторию в редакторе.</small></div>
-              <button class="button button--primary button--sm" type="button" data-view="editor">Перейти к публикациям</button>
-            </div>
-            <section class="profiles-main card">
-              <div class="catalog-toolbar">
-                <div><strong>Каталог заведений</strong><small>Добавьте все места, для которых вы ведёте соцсети</small></div>
-                <button class="button button--secondary button--sm" id="openVenueDialog" type="button">＋ Добавить заведение</button>
-              </div>
-              <div class="venue-tree" id="venueTree"></div>
-            </section>
-          </div>
-        </section>
-
-        <section class="page-view hidden" id="venueDetailView">
-          <button class="back-link" id="backToProfiles" type="button">← Все заведения</button>
-          <div class="page-heading venue-detail-heading">
-            <div><h1 id="venueDetailTitle"></h1><p>Данные, которые помогают создавать публикации в характере заведения.</p></div>
-            <span class="readiness-status" id="venueDetailStatus"></span>
-          </div>
-
-          <div class="venue-detail-layout">
-            <form class="card venue-profile-card" id="venueDetailForm">
-              <div class="section-heading"><h2>Профиль заведения</h2><p>Заполните то, что нельзя надёжно узнать без вас.</p></div>
-              <label class="field"><span>Название <b>*</b></span><input id="venueDetailName" required></label>
-              <label class="field"><span>Описание и формат <b>*</b></span><textarea id="venueDetailDescription" rows="5" placeholder="Что это за место, чем отличается и зачем сюда приходят" required></textarea></label>
-              <label class="field"><span>Tone of voice <b>*</b></span><textarea id="venueDetailVoice" rows="5" placeholder="Как заведение говорит с гостями: характер, лексика, ограничения" required></textarea></label>
-              <p class="form-error hidden" id="venueDetailError" role="alert">Заполните обязательные поля.</p>
-              <div class="detail-form-actions"><button class="button button--primary" type="submit">Сохранить профиль</button></div>
-            </form>
-
-            <div class="venue-detail-side">
-              <section class="card detail-section">
-                <div class="detail-section-heading"><div><h2>Аудитории</h2><p>Для кого вы готовите публикации этого заведения.</p></div><button class="button button--secondary button--sm" id="addDetailAudience" type="button">＋ Добавить</button></div>
-                <div class="detail-list" id="venueAudienceList"></div>
-              </section>
-              <section class="card detail-section">
-                <div class="detail-section-heading"><div><h2>Черновики</h2><p>Сохранённые публикации этого заведения.</p></div></div>
-                <div class="detail-list" id="venueDraftList"></div>
-              </section>
-            </div>
-          </div>
-        </section>
-
-        <section class="page-view hidden" id="editorView">
-          <div class="page-heading">
-            <div><h1>Новая публикация</h1><p>Подготовьте Telegram-пост под конкретное заведение и аудиторию.</p></div>
-            <span class="channel-badge">Telegram</span>
-          </div>
-
-          <section class="workspace">
-      <form class="composer card" id="composerForm">
-        <div class="section-heading">
-          <div><h2>Контекст публикации</h2><p>Для кого и от чьего имени пишем</p></div>
-        </div>
-
-        <div class="field-grid">
-          <label class="field">
-            <span>Заведение</span>
-            <select id="venueSelect" required></select>
-          </label>
-          <label class="field">
-            <span>Аудитория</span>
-            <select id="audienceSelect" required></select>
-          </label>
-        </div>
-        <div class="context-preview" id="contextPreview"></div>
-
-        <div class="divider"></div>
-        <div class="section-heading">
-          <div><h2>Содержание</h2><p>Что должно появиться в канале</p></div>
-        </div>
-
-        <label class="field">
-          <span>Тема или инфоповод <b>*</b></span>
-          <input id="topicInput" type="text" maxlength="500" placeholder="Например: запустили сезонное меню с лисичками" required>
-        </label>
-        <label class="field">
-          <span>Материалы и факты</span>
-          <textarea id="materialsInput" maxlength="12000" rows="7" placeholder="Вставьте описание, даты, цены, условия акции, цитаты или заметки. Чем точнее факты, тем лучше результат."></textarea>
-          <small><span id="materialsCount">0</span> / 12 000</small>
-        </label>
-
-        <label class="field">
-          <span>Формат публикации</span>
-          <select id="postStyleSelect"></select>
-          <small class="field-hint">Форматы зависят от профиля выбранного заведения</small>
-        </label>
-
-        <label class="upload-zone" id="uploadZone">
-          <input id="imageInput" type="file" accept="image/jpeg,image/png,image/webp">
-          <span class="upload-icon">＋</span>
-          <span><strong>Добавить изображение</strong><small>JPG, PNG или WEBP до 10 МБ · не отправляется AI</small></span>
-        </label>
-        <div class="image-chip hidden" id="imageChip">
-          <img id="imageThumb" alt="Превью вложения">
-          <span id="imageName"></span>
-          <button id="removeImage" type="button" aria-label="Удалить изображение">×</button>
-        </div>
-
-        <div class="generate-action">
-          <button class="button button--primary button--block generate-button" id="generateButton" type="submit">
-            <span id="generateButtonLabel">Создать публикацию</span><span class="button-arrow">↗</span>
-          </button>
-        </div>
-        <p class="form-error hidden" id="formError" role="alert"></p>
-      </form>
-
-      <aside class="result-panel card">
-        <div class="result-header">
-          <div>
-            <h2>Предпросмотр</h2>
-            <p>Готовый текст можно отредактировать</p>
-          </div>
-          <span class="save-state" id="saveState">Не сохранён</span>
-        </div>
-
-        <div class="empty-state" id="emptyState">
-          <div class="telegram-orbit"><span>↗</span></div>
-          <h3>Здесь появится ваш пост</h3>
-          <p>Заполните тему и материалы слева. Текст можно будет отредактировать перед публикацией.</p>
-        </div>
-
-        <div class="loading-state hidden" id="loadingState">
-          <div class="loader-lines"><i></i><i></i><i></i><i></i></div>
-          <h3>Собираем публикацию</h3>
-          <p>Учитываем голос заведения и интересы аудитории</p>
-        </div>
-
-        <div class="editor-state hidden" id="editorState">
-          <div class="demo-banner hidden" id="demoBanner">Сейчас показан демо-текст. Подключите API-ключ, чтобы генерировать готовые посты.</div>
-          <textarea id="resultEditor" aria-label="Текст Telegram-поста"></textarea>
-          <div class="editor-meta"><span id="resultCount">0 знаков</span><span>Текст можно отредактировать</span></div>
-          <div class="result-actions">
-            <button class="button button--primary" id="saveDraft" type="button">Сохранить черновик</button>
-            <button class="button button--secondary" id="copyPost" type="button">Скопировать текст</button>
-          </div>
-          <div class="attached-preview hidden" id="attachedPreview">
-            <img id="resultImage" alt="Изображение к публикации">
-            <span>Изображение приложено отдельно</span>
-          </div>
-        </div>
-
-      </aside>
-          </section>
-        </section>
-
-        <section class="page-view hidden" id="draftsView">
-          <div class="page-heading">
-            <div><h1>Черновики</h1><p>Сохранённые публикации для ваших заведений.</p></div>
-          </div>
-          <div class="drafts-card card">
-            <div class="drafts-toolbar">
-              <label class="search-field"><span>⌕</span><input id="draftSearch" type="search" placeholder="Найти по теме или заведению"></label>
-            </div>
-            <div id="draftList" class="draft-list"><p class="muted">Сохранённых черновиков пока нет.</p></div>
-          </div>
-        </section>
-
-        <section class="page-view hidden" id="promptsView">
-          <div class="page-heading">
-            <div><h1>Промпты</h1><p>Шаблоны, которые сервер использует при следующем запросе к модели.</p></div>
-            <span class="debug-badge">Отладка</span>
-          </div>
-          <div class="prompt-debug card">
-            <div class="prompt-debug-header">
-              <div><strong>Рабочие шаблоны</strong><small>Изменения применяются без перезапуска сервера</small></div>
-              <button class="button button--secondary button--sm" id="reloadPrompts" type="button">Обновить</button>
-            </div>
-            <div id="promptList" class="prompt-list"><p class="muted">Загружаем промпты…</p></div>
-          </div>
-        </section>
-      </main>
-    </div>
-  </div>
-
-  <dialog id="venueDialog">
-    <form class="entity-dialog" id="venueForm" novalidate>
-      <div class="dialog-header"><div><h2>Добавить заведение</h2><p>Сейчас достаточно названия. Профиль можно заполнить позже.</p></div><button class="dialog-close" type="button" data-close-dialog="venueDialog" aria-label="Закрыть">×</button></div>
-      <label class="dialog-field"><span>Название <b>*</b></span><input id="profileName" placeholder="Например, Тесто и огонь · Центр" required></label>
-      <p class="dialog-error hidden" id="venueFormError" role="alert">Укажите название заведения.</p>
-      <div class="dialog-actions"><button class="button button--secondary" type="button" data-close-dialog="venueDialog">Отмена</button><button id="saveVenue" class="button button--primary" type="submit">Добавить заведение</button></div>
-    </form>
-  </dialog>
-
-  <dialog id="audienceDialog">
-    <form class="entity-dialog" id="audienceForm" novalidate>
-      <div class="dialog-header"><div><h2 id="audienceDialogTitle">Добавить аудиторию</h2><p id="audienceDialogContext"></p></div><button class="dialog-close" type="button" data-close-dialog="audienceDialog" aria-label="Закрыть">×</button></div>
-      <label class="dialog-field"><span>Название аудитории <b>*</b></span><input id="audienceName" placeholder="Например, семьи с детьми" required></label>
-      <label class="dialog-field"><span>Портрет посетителей <b>*</b></span><textarea id="audiencePortrait" rows="3" placeholder="Кто они, зачем приходят, что для них важно" required></textarea></label>
-      <label class="dialog-field"><span>Потребности и ожидания <b>*</b></span><textarea id="audienceNeeds" rows="2" placeholder="Что помогает им выбрать это заведение" required></textarea></label>
-      <p class="dialog-error hidden" id="audienceFormError" role="alert">Заполните все обязательные поля.</p>
-      <div class="dialog-actions"><button class="button button--secondary" type="button" data-close-dialog="audienceDialog">Отмена</button><button id="saveAudience" class="button button--primary" type="submit">Добавить аудиторию</button></div>
-    </form>
-  </dialog>
-
-  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">
-    <span class="toast-icon" aria-hidden="true">✓</span>
-    <span id="toastMessage"></span>
-  </div>
-
-  <script src="js/utils.js" defer></script>
-  <script src="js/store.js" defer></script>
-  <script src="js/api.js" defer></script>
-  <script src="app.js" defer></script>
+      <ul class="box-points" aria-label="Что внутри коробки">
+        <li>Готовый профиль VPN</li>
+        <li>Файл запуска под платформу</li>
+        <li>Без лишней панели и лишних шагов</li>
+      </ul>
+    </section>
+  </main>
 </body>
 </html>

@@ -30,6 +30,12 @@ Provide copy-to-clipboard, not Telegram Bot API integration.
 
 Reason: direct publishing introduces channel authorization and operational risk that is not part of the core problem for release one.
 
+## VPN box delivery
+
+Expose the VPN as two centered downloads, one for Windows and one for Mac, and generate per-platform zip packages on the server from a provided OpenVPN profile.
+
+Reason: the user asked for a boxy, low-friction MVP for a very small audience. A download-only front door keeps the surface area tiny while still giving a single, obvious action.
+
 ## Code organization
 
 Keep the zero-dependency runtime, but separate responsibilities by module. Browser storage, API access, and generic utilities live outside the UI coordinator. Python prompt validation, OpenAI integration, and HTTP transport live in separate package modules. Tests import the owning modules directly; `server.py` remains only a compatibility entry point.
