@@ -7,8 +7,11 @@ ENV HOST=0.0.0.0 \
 
 WORKDIR /app
 
-COPY postovaya ./postovaya
-COPY web ./web
+COPY index.html ./index.html
+COPY styles.css ./styles.css
+COPY presentation.js ./presentation.js
+COPY slides.md ./slides.md
+COPY parrot-transparent.png ./parrot-transparent.png
 COPY server.py ./server.py
 
 EXPOSE 8080

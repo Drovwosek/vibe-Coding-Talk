@@ -3,38 +3,297 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="VPN box: готовая коробка для Windows и Mac">
-  <title>VPN Box</title>
+  <meta name="theme-color" content="#f7f7f5">
+  <title>Вайбкодинг: от мысли к работающему прототипу</title>
+  <script>document.documentElement.classList.add('js')</script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main class="box-page">
-    <section class="hero-card" aria-labelledby="title">
-      <div class="hero-kicker">готовая коробка</div>
-      <h1 id="title">VPN Box</h1>
-      <p class="hero-copy">Скачай коробку, запусти, и VPN будет готов к работе без лишних экранов и без админки.</p>
+  <a class="skip-link" href="#slides">К презентации</a>
 
-      <div class="download-grid" aria-label="Скачать коробку">
-        <a class="download-button download-button--windows" href="vpn-box-windows.zip" download>
-          <span class="download-button__label">Скачать для Windows</span>
-          <span class="download-button__hint">zip с готовой коробкой</span>
-        </a>
-        <a class="download-button download-button--mac" href="vpn-box-mac.zip" download>
-          <span class="download-button__label">Скачать для Mac</span>
-          <span class="download-button__hint">zip с готовой коробкой</span>
-        </a>
+  <main id="slides" class="deck" aria-live="polite">
+    <section class="slide slide--title is-active" id="slide-1" data-title="Привет">
+      <div class="eyebrow">26.06.2026 · внутренний доклад</div>
+      <h1>Вайб + код</h1>
+      <p class="lead">Прототипируем без фигмы</p>
+      <div class="terminal-line"><span>›</span> расширение <s>сознания</s> границы применения нейронок (куда-то в сторонку разработки)</div>
+    </section>
+
+    <section class="slide" id="slide-2" data-title="Цели и не цели">
+      <div class="eyebrow">Что хочу</div>
+      <h2>Цели и не цели</h2>
+      <div class="split">
+        <article class="plain-panel">
+          <div class="panel-label panel-label--accent">Цели</div>
+          <ul class="check-list">
+            <li>Расширить представление о возможностях нейронок</li>
+            <li>(После доклада) попробовать самостоятельно завайбкодить работающий прототип</li>
+          </ul>
+        </article>
+        <article class="plain-panel muted">
+          <div class="panel-label">Не цели</div>
+          <ul class="dash-list">
+            <li>Научиться программировать</li>
+            <li>Собрать готовый продукт</li>
+            <li>Доказать, что ИИ заменит специалиста</li>
+          </ul>
+        </article>
       </div>
+    </section>
 
-      <div class="box-rail" aria-hidden="true">
-        <span></span><span></span><span></span>
+    <section class="slide" id="slide-3" data-title="Личный контекст">
+      <div class="eyebrow"></div>
+      <h2>Что я проверил на практике</h2>
+      <div class="split">
+        <article class="plain-panel">
+          <div class="panel-label panel-label--accent">Помогает</div>
+          <ul class="check-list">
+            <li>Собирать работающий прототип за пару часов</li>
+            <li>Проверять и тестировать сценарии до разработки</li>
+          </ul>
+        </article>
+        <article class="plain-panel muted">
+          <div class="panel-label">Упирается</div>
+          <ul class="dash-list">
+            <li>1-2 недели отладки</li>
+            <li>Продуктовые фичи всё равно требуют надзор</li>
+          </ul>
+        </article>
       </div>
+      <div class="note-line">Мой опыт больше про тестирование гипотез о продукте, чем про проектирование интерфейса.</div>
+    </section>
 
-      <ul class="box-points" aria-label="Что внутри коробки">
-        <li>Готовый профиль VPN</li>
-        <li>Файл запуска под платформу</li>
-        <li>Без лишней панели и лишних шагов</li>
-      </ul>
+    <section class="slide" id="slide-4" data-title="Вайбкодинг не только для разработчиков">
+      <div class="eyebrow">Смена перспективы</div>
+      <h2>Не только для разработчиков</h2>
+      <p class="statement">Вайбкодинг — инструмент проверки гипотез: от запуска нового продукта до правки экрана входа.</p>
+      <div class="role-row" aria-label="Роли">
+        <span>запуск нового продукта</span><i></i><span>правка экрана входа</span>
+      </div>
+      <div class="note-line">Стоимость проверки продуктовой гипотезы сильно снизилась.</div>
+    </section>
+
+    <section class="slide" id="slide-5" data-title="Код как инструмент мышления">
+      <div class="eyebrow">Главный сдвиг</div>
+      <h2>Код как инструмент мышления</h2>
+      <p class="lead max-56">Код появляется до спеки фичи или продукта.</p>
+      <div class="process process--before">
+        <span>идея → макет → ТЗ → код</span>
+      </div>
+      <div class="process process--after">
+        <span>идея</span><b>↔</b><span class="process-end">прототип в коде</span><b>↔</b><span>доработка</span><b>↔</b><span>спецификация</span>
+      </div>
+      <div class="note-line">Сначала появляется прототип, который может стать концептом или источником спецификации. Но задача, критерии и проверка всё равно остаются профессиональной работой.</div>
+    </section>
+
+    <section class="slide slide--quote" id="slide-6" data-title="Не замена специалистов">
+      <div class="eyebrow">Успокаиваемся</div>
+      <blockquote>Не замена специалистов.<br><span>Работа меняется, а не исчезает.</span></blockquote>
+      <div class="human-ai">
+        <div><b>Человек</b><small>задача · контекст · экспертная оценка</small></div>
+        <div class="join">+</div>
+        <div><b>ИИ</b><small>варианты · сборка · скорость</small></div>
+        <div class="join">+</div>
+        <div><b>Команда</b><small>качество · масштабирование · ответственность за результат</small></div>
+      </div>
+      <div class="note-line">Вайбкодинг не убирает человека из процесса. Он меняет, где именно нужен человек</div>
+    </section>
+
+    <section class="slide" id="slide-7" data-title="Путь демо">
+      <div class="eyebrow">Путь демо</div>
+      <h2>Давай что-нибудь сделаем</h2>
+      <ol class="route-list">
+        <li><span>01</span><strong>Инструменты и старт</strong><small>Что нужно, чтобы начать и как поставить первый запрос</small></li>
+        <li><span>02</span><strong>Первый прототип и деплой</strong><small>Соберём рабочую версию и выложим её</small></li>
+        <li><span>03</span><strong>Разбор результата</strong><small>Что получилось, что нет, что не хватило</small></li>
+      </ol>
+    </section>
+
+    <section class="slide" id="slide-8" data-title="Что нужно для начала">
+      <div class="eyebrow">Порог входа</div>
+      <h2>Что нужно для начала</h2>
+      <div class="requirements">
+        <div class="requirement requirement--yes"><span>Нужно</span><b>Компьютер</b><b>Подписка</b><b>Формулировать мысли в предложения</b></div>
+        <div class="requirement requirement--no"><span>Не обязательно</span><b>Умение писать код</b><b>Углубленное знание алгоритмов</b></div>
+      </div>
+      <p class="footnote">Без понимания задачи, ограничений и нюансов используемой технологии далеко не уедешь</p>
+    </section>
+
+    <section class="slide" id="slide-9" data-title="Что может быть результатом">
+      <div class="eyebrow">не production, нет, не сейчас, потом</div>
+      <h2>Что может быть результатом</h2>
+      <div class="outcome-grid">
+        <div><span>01</span>Прототип продукта</div>
+        <div><span>02</span>Цифровая копия</div>
+        <div><span>03</span>Отдельный сценарий на UX-тест</div>
+        <div><span>04</span>Инструмент для работы</div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-10" data-title="Цикл работы">
+      <div class="eyebrow">Работа итерациями</div>
+      <h2>Цикл вайбкодинга</h2>
+      <div class="cycle" aria-label="Цикл вайбкодинга">
+        <div><span>1</span><b>Задача и контекст</b></div>
+        <div><span>2</span><b>Версия</b></div>
+        <div><span>3</span><b>Ревью</b></div>
+        <div><span>4</span><b>Уточнение</b></div>
+      </div>
+      <p class="loop-label">и ещё раз ↻</p>
+    </section>
+
+    <section class="slide slide--dark" id="slide-11" data-title="Shиt in — shиt out">
+      <div class="eyebrow">Качество входа определяет потолок выхода</div>
+      <h2>Shit in<br><span>shit out</span></h2>
+      <p class="lead max-48">Нейронка не читает мысли. Если на входе нет ясной задачи, контекста и полезных данных, то хорошего результата тоже нет. => +ответственность</p>
+      <div class="input-output"><code>размытая задача</code><b>→</b><code>бред</code></div>
+    </section>
+
+    <section class="slide slide--demo" id="slide-12" data-title="Демо">
+      <div class="demo-frame">
+        <div class="demo-status"><i></i> demo</div>
+        <h2>Начинаем демо</h2>
+        <p>Демо</p>
+        <div class="demo-hint">Демо?</div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-13" data-title="Что будем вайбкодить">
+      <div class="eyebrow">...Отвечает Борис Бурда</div>
+      <h2>Что будем вайбкодить?</h2>
+      <p class="lead">Ограничение только по времени</p>
+      <div class="choice-grid">
+        <div><span>A</span><b>Один экран</b><small>интерфейс и визуальные детали</small></div>
+        <div><span>B</span><b>Короткий сценарий</b><small>2–3 состояния и переходы</small></div>
+        <div><span>C</span><b>Мини-инструмент</b><small>одна понятная рабочая задача</small></div>
+      </div>
+      <p class="footnote">API-ключ для АИ фичей - есть :^)</p>
+    </section>
+
+    <section class="slide" id="slide-14" data-title="Что сейчас произошло">
+      <div class="eyebrow">Разбираем магию на части</div>
+      <h2>Что сейчас произошло</h2>
+      <ol class="timeline">
+        <li><span>01</span>Поставили задачу</li>
+        <li><span>02</span>Получили первую версию</li>
+        <li><span>03</span>Нашли расхождения</li>
+        <li><span>04</span>Уточнили и повторили</li>
+      </ol>
+    </section>
+
+    <section class="slide" id="slide-15" data-title="Что получилось, а что нет">
+      <div class="eyebrow">Разбор</div>
+      <h2>Что получилось, а что нет</h2>
+      <div class="split">
+        <article class="plain-panel">
+          <div class="panel-label panel-label--accent">Получилось</div>
+          <ul class="review-list">
+            <li><label class="review-item"><input type="checkbox"><span>Получить рабочую версию</span></label></li>
+            <li><label class="review-item"><input type="checkbox"><span>Получить рабочую версию</span></label></li>
+            <li><label class="review-item"><input type="checkbox"><span>Воспроизвести видимую структуру</span></label></li>
+            <li><label class="review-item"><input type="checkbox"><span>Исправить что-нибудь на ходу</span></label></li>
+            <li><label class="review-item"><input type="checkbox"><span>Написать спеку</span></label></li>
+          </ul>
+        </article>
+        <article class="plain-panel">
+          <div class="panel-label">Потребовало человека</div>
+          <ul class="review-list review-list--muted">
+            <li><label class="review-item"><input type="checkbox"><span>Заметить расхождения</span></label></li>
+            <li><label class="review-item"><input type="checkbox"><span>Проверить выполнение сценариев</span></label></li>
+            <li><label class="review-item"><input type="checkbox"><span>Потестировать</span></label></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-16" data-title="Где здесь ценность?">
+      <div class="eyebrow">Не только скорость</div>
+      <p class="statement">Кмк ценность не в скорости создания живого прототипа. Вайбкодинг помогает быстро сделать и проверить гипотезу.</p>
+      <p class="lead">В чём вы видите ценность?</p>
+      <div class="value-path"><span>гипотеза</span><b>→</b><span>прототип</span><b>→</b><span>проверка</span><b>→</b><span>решение</span></div>
+    </section>
+
+    <section class="slide" id="slide-17" data-title="Это не production">
+      <div class="eyebrow">Граница ответственности</div>
+      <h2>Это не production</h2>
+      <p class="lead max-52">Прототип помогает точнее показать сценарий и ожидаемое поведение. Он не заменяет техническую реализацию.</p>
+      <div class="production-grid">
+        <span>архитектура</span><span>тестирование</span><span>безопасность</span><span>доступность</span><span>поддержка</span><span>ответственность</span>
+      </div>
+      <p class="footnote">Перед "релизом в прод" нужны безопасность, тестирование, инфраструктура.</p>
+    </section>
+
+    <section class="slide slide--compare" id="slide-18" data-title="Главный вывод">
+      <div class="eyebrow">Главный вывод</div>
+      <h2>Расстояние до результата становится короче</h2>
+      <div class="distance-compare" aria-label="Сравнение пути до и после">
+        <div class="distance-row">
+          <div class="distance-row__label">До</div>
+          <div class="distance-row__meter">
+            <span class="distance-row__track distance-row__track--before"></span>
+            <span class="distance-row__marker distance-row__marker--start" aria-label="старт"></span>
+            <span class="distance-row__marker distance-row__marker--end" aria-label="финиш"></span>
+          </div>
+          <div class="distance-row__meta">путь от мысли продакта до результата</div>
+        </div>
+        <div class="distance-row">
+          <div class="distance-row__label distance-row__label--accent">После</div>
+          <div class="distance-row__meter">
+            <span class="distance-row__track distance-row__track--after"></span>
+            <span class="distance-row__marker distance-row__marker--start" aria-label="старт"></span>
+            <span class="distance-row__marker distance-row__marker--end" aria-label="финиш"></span>
+          </div>
+          <div class="distance-row__meta">кратно короче</div>
+        </div>
+      </div>
+      <p class="note-line">Вайбкодинг сокращает расстояние между мыслью и работающим результатом, но не отменяет профессиональные навыки и ответственность.</p>
+    </section>
+
+    <section class="slide slide--start" id="slide-19" data-title="Если вдруг решите начать:">
+      <div class="eyebrow">Первые шаги</div>
+      <h2>Как начать</h2>
+      <div class="start-steps">
+        <div class="start-step">
+          <span>01</span>
+          <div><b>Берём аккаунт</b><small>У нас уже есть рабочие, но можно создать свой.</small></div>
+        </div>
+        <div class="start-step">
+          <span>02</span>
+          <div><b>Открываем терминал</b><small>Windows или macOS — дальше действия будут одинаковыми.</small></div>
+        </div>
+        <div class="start-step start-step--command">
+          <span>03</span>
+          <div>
+            <b>Ставим Codex</b>
+            <code>powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"</code>
+          </div>
+        </div>
+        <div class="start-step">
+          <span>04</span>
+          <div><b>Пробуем диалог</b><small>«А как с тобой программировать?»</small></div>
+        </div>
+        <div class="start-step">
+          <span>05</span>
+          <div><b>Идём дальше</b><small>Скилы и агенты — в следующей части.</small></div>
+        </div>
+      </div>
+      <p class="note-line">Claude нам не подходит: доступ завязан на географию, и часть пользователей вне поддерживаемых стран и регионов просто отсеивается. Для рабочего процесса это лишний барьер, поэтому берём Codex.</p>
     </section>
   </main>
+
+  <div class="chrome" aria-label="Управление презентацией">
+    <div class="progress" aria-hidden="true"><div id="progress-bar"></div></div>
+    <div class="chrome-row">
+      <button id="prev" type="button" aria-label="Предыдущий слайд">←</button>
+      <div class="counter"><span id="current">01</span><i>/</i><span id="total">19</span></div>
+      <div id="slide-title" class="current-title">Привет</div>
+      <button id="fullscreen" type="button" aria-label="Полноэкранный режим">⛶</button>
+      <button id="next" type="button" aria-label="Следующий слайд">→</button>
+    </div>
+  </div>
+
+  <img id="parrot" class="parrot-overlay" src="parrot-transparent.png" alt="" aria-hidden="true">
+
+  <script src="presentation.js"></script>
 </body>
 </html>
