@@ -14,11 +14,15 @@ class AppHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(ROOT), **kwargs)
 
+    def _is_health_request(self):
+        path = self.path.split("?", 1)[0].rstrip("/")
+        return path == "/api/health"
+
     def log_message(self, format_string, *args):
         print("[%s] %s" % (self.log_date_time_string(), format_string % args))
 
     def do_GET(self):
-        if self.path == "/api/health":
+        if self._is_health_request():
             payload = json.dumps({"ok": True}, ensure_ascii=False).encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "application/json; charset=utf-8")
@@ -30,7 +34,7 @@ class AppHandler(SimpleHTTPRequestHandler):
         super().do_GET()
 
     def do_HEAD(self):
-        if self.path == "/api/health":
+        if self._is_health_request():
             payload = b'{"ok":true}'
             self.send_response(200)
             self.send_header("Content-Type", "application/json; charset=utf-8")
